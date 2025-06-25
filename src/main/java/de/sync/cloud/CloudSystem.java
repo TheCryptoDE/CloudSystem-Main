@@ -3,11 +3,8 @@ package de.sync.cloud;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
-import de.sync.cloud.Networking.PrintInfo;
-import de.sync.cloud.Networking.SocketInfo;
-import de.sync.cloud.Networking.handler.Client;
-import de.sync.cloud.command.CommandManager;
+import de.sync.cloud.networking.PrintInfo;
+import de.sync.cloud.networking.SocketInfo;
 import de.sync.cloud.command.HelpTask;
 import de.sync.cloud.console.ConsoleInput;
 import de.sync.cloud.console.MySQLConfig;
@@ -19,11 +16,9 @@ import de.sync.cloud.module.Module;
 import de.sync.cloud.module.ModuleLoader;
 import de.sync.cloud.module.ModuleManager;
 import de.sync.cloud.services.ProxyWatchdog;
-import de.sync.cloud.services.ServerManager;
 import de.sync.cloud.task.*;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -36,12 +31,11 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.sync.cloud.Networking.PrintInfo.*;
-import static de.sync.cloud.Networking.SocketInfo.AUTH_PASSWORD;
-import static de.sync.cloud.Networking.SocketInfo.SOCKET_PORT;
-import static de.sync.cloud.Networking.handler.Client.handleClient;
+import static de.sync.cloud.networking.PrintInfo.*;
+import static de.sync.cloud.networking.SocketInfo.AUTH_PASSWORD;
+import static de.sync.cloud.networking.SocketInfo.SOCKET_PORT;
+import static de.sync.cloud.networking.handler.Client.handleClient;
 import static de.sync.cloud.services.ServiceStart.startServer;
-import static de.sync.cloud.services.config.ProxyConfigCreator.createBungeeConfig;
 
 public class CloudSystem {
 

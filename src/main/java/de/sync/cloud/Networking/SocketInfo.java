@@ -1,4 +1,4 @@
-package de.sync.cloud.Networking;
+package de.sync.cloud.networking;
 
 public class SocketInfo {
 

@@ -1,4 +1,4 @@
-package de.sync.cloud.Networking.handler;
+package de.sync.cloud.networking.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -10,8 +10,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import static de.sync.cloud.CloudSystem.*;
-import static de.sync.cloud.Networking.PrintInfo.printError;
-import static de.sync.cloud.Networking.SocketInfo.AUTH_PASSWORD;
+import static de.sync.cloud.networking.PrintInfo.printError;
+import static de.sync.cloud.networking.SocketInfo.AUTH_PASSWORD;
 import static de.sync.cloud.services.ServiceStart.startServer;
 
 public class Client {
