@@ -3,6 +3,9 @@ package de.sync.cloud;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.sync.cloud.command.CloudVersionCommand;
+import de.sync.cloud.logger.Loggers;
+import de.sync.cloud.logger.LoggersType;
 import de.sync.cloud.networking.PrintInfo;
 import de.sync.cloud.networking.SocketInfo;
 import de.sync.cloud.command.HelpTask;
@@ -51,9 +54,6 @@ public class CloudSystem {
     public static final Map<String, ServerProcess> runningServers = new ConcurrentHashMap<>();
     public static final Map<String, Task> commands = new HashMap<>();
 
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_LIGHT_BLUE = "\u001B[94m";
-    private static final String ANSI_YELLOW = "\u001B[93m";
 
     public static String getCurrentMotd() {
         if (!SERVICE_FILE.exists()) {
@@ -75,10 +75,10 @@ public class CloudSystem {
 
         try (FileWriter writer = new FileWriter(SERVICE_FILE)) {
             gson.toJson(defaultJson, writer);
-            System.out.println("service.json wurde erstellt mit Standard-MOTD.");
+            new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "service.json wurde erstellt mit Standard-MOTD.");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Fehler beim Erstellen der service.json");
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Erstellen der service.json");
         }
     }
 
@@ -94,10 +94,9 @@ public class CloudSystem {
         // Prüfen ob mysql.json existiert
         File mysqlFile = new File("mysql.json");
         if (!mysqlFile.exists()) {
-            printWarn("MySQL-Konfiguration nicht gefunden. Starte Setup...");
 
-            // Wir machen hier ein minimalistisches MySQL-Setup
-            // Da wir in diesem Fall nicht wissen, ob eine Lobby existiert, nehmen wir einfach false
+            new Loggers(LoggersType.INFO, Loggers.useColorSystem, "MySQL-Konfiguration nicht gefunden. Starte Setup...");
+
             SetupManager.frageMySQLDaten(scanner, false);
         }
 
@@ -106,7 +105,7 @@ public class CloudSystem {
         try {
             config = MySQLConfig.loadFromFile(mysqlFile);
         } catch (IOException e) {
-            printError("Fehler beim Laden der MySQL-Konfiguration: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Laden der MySQL-Konfiguration: " + e.getMessage());
             return;
         }
 
@@ -130,7 +129,7 @@ public class CloudSystem {
         if (new File(templatesDir, "bungeecord").exists()) {
             try {
                 startServer("BungeeCordProxy", "bungeecord", PROXY_PORT, true, true);
-                PrintInfo.printSuccess("BungeeCord ProxyWatchdog gestartet auf Port " + PROXY_PORT);
+                new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "BungeeCord ProxyWatchdog gestartet auf Port " + PROXY_PORT);
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -139,7 +138,7 @@ public class CloudSystem {
                 }, 10000);
                 createServiceJson("BungeeCordProxy", PROXY_PORT);
             } catch (Exception e) {
-                printError("Fehler beim Starten von BungeeCord: " + e.getMessage());
+                new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Starten von BungeeCord: " + e.getMessage());
             }
         }
 
@@ -159,8 +158,8 @@ public class CloudSystem {
         File modulesDir = new File("modules");
         if (!modulesDir.exists()) {
             boolean created = modulesDir.mkdirs();
-            if (created) printInfo("Module-Ordner wurde erstellt.");
-            else printError("Module-Ordner konnte nicht erstellt werden!");
+            if (created) new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "Module-Ordner erfolgreich erstellt!");
+            else new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Module-Ordner konnte nicht erstellt werden!");
         }
 
         ModuleLoader loader = new ModuleLoader(modulesDir);
@@ -194,9 +193,9 @@ public class CloudSystem {
         File jsonFile = new File(serversDir, serverName + "_service.json");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(jsonFile))) {
             writer.write(gson.toJson(serviceJson));
-            PrintInfo.printSuccess("Service JSON für " + serverName + " erstellt: " + jsonFile.getAbsolutePath());
+            new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "Service JSON für " + serverName + " erstellt: " + jsonFile.getAbsolutePath());
         } catch (IOException e) {
-            printError("Fehler beim Erstellen von service.json: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Erstellen von service.json: " + e.getMessage());
         }
     }
 
@@ -212,7 +211,7 @@ public class CloudSystem {
 
     public void startSocketListener() throws IOException {
         serverSocket = new ServerSocket(SOCKET_PORT);
-        PrintInfo.printInfo("Cloud Socket Listener auf Port " + SOCKET_PORT);
+        new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Cloud Socket Listener auf Port " + SOCKET_PORT);
         while (true) {
             Socket client = serverSocket.accept();
             new Thread(() -> handleClient(client)).start();
@@ -224,7 +223,7 @@ public class CloudSystem {
         if (sp == null) throw new IOException("Server nicht gefunden");
         sp.process.destroy();
         runningServers.remove(serverName);
-        PrintInfo.printSuccess("Server " + serverName + " gestoppt.");
+        new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Server " + serverName + " gestoppt.");
     }
     private void startGroupServers(GroupManager groupManager) {
         for (Group group : groupManager.getGroups()) {
@@ -240,7 +239,7 @@ public class CloudSystem {
                     // Starte lokalen Server (Minecraft-Server etc)
                //     startServer(serverName, groupName, port, false, true);
                     createServiceJson(serverName, port);
-                    PrintInfo.printSuccess("Server " + serverName + " gestartet auf Port " + port);
+                    new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "Server " + serverName + " gestartet auf Port " + port);
 
                     // Informiere BungeeCord Proxy Plugin per Socket
                     new Timer().schedule(new TimerTask() {
@@ -250,7 +249,7 @@ public class CloudSystem {
                         }
                     }, 8000);
                 } catch (Exception e) {
-                    PrintInfo.printError("Fehler beim Starten von Server " + serverName + ": " + e.getMessage());
+                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Starten von Server " + serverName + ": " + e.getMessage());
                 }
             }
         }
@@ -268,7 +267,7 @@ public class CloudSystem {
 
             String authResponse = in.readLine();
             if (!"AUTH_OK".equals(authResponse)) {
-                printError("Auth beim Bungee Proxy fehlgeschlagen!");
+                new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Auth beim Bungee Proxy fehlgeschlagen!");
                 return;
             }
 
@@ -278,10 +277,10 @@ public class CloudSystem {
             out.flush();
 
             String response = in.readLine();
-            printInfo("Antwort vom Proxy auf Command: " + response);
+            new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Antwort vom Proxy auf Command: " + response);
 
         } catch (IOException e) {
-            printError("Fehler beim Senden des Commands an BungeeCord: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Senden des Commands an BungeeCord: " + e.getMessage());
         }
     }
 
@@ -320,12 +319,12 @@ public class CloudSystem {
 
     private void initCommands() {
         commands.put("stop", args -> {
-            PrintInfo.printInfo("Stoppe alle Server...");
+            new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Stoppe alle Server...");
             for (String server : new ArrayList<>(runningServers.keySet())) {
                 try {
                     stopServer(server);
                 } catch (IOException e) {
-                    printError("Fehler beim Stoppen von " + server + ": " + e.getMessage());
+                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Stoppen von " + server + ": " + e.getMessage());
                 }
             }
             PrintInfo.printSuccess("Alle Server gestoppt. Cloud wird beendet.");
@@ -357,15 +356,17 @@ public class CloudSystem {
             GroupManager groupManager = new GroupManager(connection);
             commands.put("service", new ServiceCommandTask(this));
             commands.put("group", new GroupCreateTask(groupManager));
-            commands.put("help", new HelpTask(commands));
+            commands.put("help", new HelpTask());
+            commands.put("version", new CloudVersionCommand());
+
 
             printSuccess("MySQL-Verbindung erfolgreich aufgebaut.");
 
         } catch (IOException e) {
-            printError("Fehler beim Laden der MySQL-Konfiguration: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Laden der MySQL-Konfiguration: " + e.getMessage());
             System.exit(1);
         } catch (SQLException e) {
-            printError("Fehler bei der MySQL-Verbindung: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler bei der MySQL-Verbindung: " + e.getMessage());
             System.exit(1);
         }
     }

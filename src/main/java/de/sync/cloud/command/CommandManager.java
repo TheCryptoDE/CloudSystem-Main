@@ -16,7 +16,8 @@ public class CommandManager {
         // Statt zwei Tasks jetzt nur ein ServiceCommandTask für "service"
         register("service", new ServiceCommandTask(cloud));
         register("group", new GroupCreateTask(groupManager));
-        register("help", new HelpTask(commands));
+        register("help", new HelpTask());
+        register("version", new CloudVersionCommand());
     }
 
     public void register(String name, Task task) {

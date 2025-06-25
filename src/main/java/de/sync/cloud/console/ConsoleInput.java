@@ -12,7 +12,6 @@ public class ConsoleInput {
     public static ConsoleInput consoleInputLoop() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            printPrompt();
             String line = scanner.nextLine();
             if (line == null || line.trim().isEmpty()) continue;
 

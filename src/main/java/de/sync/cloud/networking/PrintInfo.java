@@ -44,15 +44,16 @@ public class PrintInfo {
 
     public static void printHeader() {
         String line = "═══════════════════════════════════════════════════════════════════════";
-             System.out.println(ANSI_CYAN +
-             "  _________                   _________ .__                   .___\n" +
-             " /   _____/__.__. ____   ____ \\_   ___ \\|  |   ____  __ __  __| _/\n" +
-             " \\_____  <   |  |/    \\_/ ___\\/    \\  \\/|  |  /  _ \\|  |  \\/ __ | \n" +
-             " /        \\___  |   |  \\  \\___\\     \\___|  |_(  <_> )  |  / /_/ | \n" +
-             "/_______  / ____|___|  /\\___  >\\______  /____/\\____/|____/\\____ | \n" +
-             "        \\/\\/         \\/     \\/        \\/                       \\/ " + ANSI_RESET);
+             System.out.println(ANSI_CYAN + "\n" +
+                     "   _____                   _____ _                 _ \n" +
+                     "  / ____|                 / ____| |               | |\n" +
+                     " | (___  _   _ _ __   ___| |    | | ___  _   _  __| |\n" +
+                     "  \\___ \\| | | | '_ \\ / __| |    | |/ _ \\| | | |/ _` |\n" +
+                     "  ____) | |_| | | | | (__| |____| | (_) | |_| | (_| |\n" +
+                     " |_____/ \\__, |_| |_|\\___|\\_____|_|\\___/ \\__,_|\\__,_|  (EARTHQUAKE-1.0.1)\n" +
+                     "          __/ |                                      \n" +
+                     "         |___/                                       \n" + ANSI_RESET);
 
-        System.out.println(ANSI_RESET);
         System.out.println(ANSI_CYAN + "<!> SyncCloudService - ready for the future?");
         System.out.println(ANSI_CYAN + "<!> support: https://synccloudservice.eu/" + ANSI_RESET);
         System.out.println(ANSI_CYAN );
