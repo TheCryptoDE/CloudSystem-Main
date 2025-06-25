@@ -1,4 +1,4 @@
-package de.sync.cloud.networking;
+package de.sync.cloud.networkingd;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

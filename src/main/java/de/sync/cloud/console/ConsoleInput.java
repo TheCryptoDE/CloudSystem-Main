@@ -5,7 +5,7 @@ import de.sync.cloud.task.Task;
 
 import java.util.Scanner;
 
-import static de.sync.cloud.networking.PrintInfo.*;
+import static de.sync.cloud.networkingd.PrintInfo.*;
 
 public class ConsoleInput {
 

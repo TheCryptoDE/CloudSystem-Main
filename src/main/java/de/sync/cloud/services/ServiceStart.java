@@ -1,7 +1,7 @@
 package de.sync.cloud.services;
 
 import de.sync.cloud.CloudSystem;
-import de.sync.cloud.networking.PrintInfo;
+import de.sync.cloud.networkingd.PrintInfo;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static de.sync.cloud.CloudSystem.*;
-import static de.sync.cloud.networking.PrintInfo.printError;
+import static de.sync.cloud.networkingd.PrintInfo.printError;
 
 public class ServiceStart {
 

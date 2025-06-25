@@ -1,6 +1,6 @@
 package de.sync.cloud.module;
 
-import de.sync.cloud.networking.PrintInfo;
+import de.sync.cloud.networkingd.PrintInfo;
 
 import java.io.File;
 import java.io.IOException;
