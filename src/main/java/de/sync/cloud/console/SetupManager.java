@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-import static de.sync.cloud.networkingd.PrintInfo.*;
+import static de.sync.cloud.networking.PrintInfo.*;
 
 public class SetupManager {
 

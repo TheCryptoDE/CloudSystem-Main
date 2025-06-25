@@ -1,6 +1,6 @@
 package de.sync.cloud.command;
 
-import de.sync.cloud.networkingd.PrintInfo;
+import de.sync.cloud.networking.PrintInfo;
 import de.sync.cloud.task.Task;
 
 import java.util.Map;

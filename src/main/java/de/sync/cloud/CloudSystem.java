@@ -3,8 +3,8 @@ package de.sync.cloud;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.sync.cloud.networkingd.PrintInfo;
-import de.sync.cloud.networkingd.SocketInfo;
+import de.sync.cloud.networking.PrintInfo;
+import de.sync.cloud.networking.SocketInfo;
 import de.sync.cloud.command.HelpTask;
 import de.sync.cloud.console.ConsoleInput;
 import de.sync.cloud.console.MySQLConfig;
@@ -31,10 +31,10 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.sync.cloud.networkingd.PrintInfo.*;
-import static de.sync.cloud.networkingd.SocketInfo.AUTH_PASSWORD;
-import static de.sync.cloud.networkingd.SocketInfo.SOCKET_PORT;
-import static de.sync.cloud.networkingd.handler.Client.handleClient;
+import static de.sync.cloud.networking.PrintInfo.*;
+import static de.sync.cloud.networking.SocketInfo.AUTH_PASSWORD;
+import static de.sync.cloud.networking.SocketInfo.SOCKET_PORT;
+import static de.sync.cloud.networking.handler.Client.handleClient;
 import static de.sync.cloud.services.ServiceStart.startServer;
 
 public class CloudSystem {

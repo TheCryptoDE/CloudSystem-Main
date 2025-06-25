@@ -1,7 +1,7 @@
 package de.sync.cloud.task;
 
 import de.sync.cloud.CloudSystem;
-import de.sync.cloud.networkingd.PrintInfo;
+import de.sync.cloud.networking.PrintInfo;
 import de.sync.cloud.services.ServiceStart;
 
 import java.io.IOException;

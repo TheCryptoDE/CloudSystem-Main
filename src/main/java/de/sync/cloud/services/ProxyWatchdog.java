@@ -1,13 +1,13 @@
 package de.sync.cloud.services;
 
 import com.google.gson.JsonObject;
-import de.sync.cloud.networkingd.SocketInfo;
+import de.sync.cloud.networking.SocketInfo;
 
 import java.io.*;
 import java.net.Socket;
 
 import static de.sync.cloud.CloudSystem.*;
-import static de.sync.cloud.networkingd.PrintInfo.*;
+import static de.sync.cloud.networking.PrintInfo.*;
 import static de.sync.cloud.services.ServiceStart.startServer;
 
 public class ProxyWatchdog {
