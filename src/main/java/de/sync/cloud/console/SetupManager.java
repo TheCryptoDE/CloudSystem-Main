@@ -83,14 +83,14 @@ public class SetupManager {
                     }
 
                     // CloudSignPlugin Ordner erstellen
-                    File cloudSignPluginDir = new File(lobbyTemplate, "plugins/CloudSignPlugin");
+                    File cloudSignPluginDir = new File(lobbyTemplate, "plugins/CloudBridge");
                     cloudSignPluginDir.mkdirs();
 
                     // Jetzt den CloudSign Plugin Download starten
                     printInfo("Lade CloudSignPlugin herunter...");
                     CloudSystem.downloadFileStatic(
-                            "https://github.com/TheCryptoDE/CloudSystem-SignSpigot/releases/download/1.0.1/CloudSystem-SignSpigot-1.0-SNAPSHOT.jar",
-                            new File(lobbyTemplate, "plugins/CloudSignPlugin.jar")
+                            "https://github.com/TheCryptoDE/CloudSystem-SignSpigot/releases/download/1.0.1/CloudSystem-CloudBridge-1.0-SNAPSHOT.jar",
+                            new File(lobbyTemplate, "plugins/CloudBridge.jar")
                     );
 
                     printSuccess("CloudSignPlugin wurde erfolgreich heruntergeladen.");
@@ -259,7 +259,7 @@ public class SetupManager {
 
         // Wenn Lobby erstellt werden soll, zusätzlich ins CloudSignPlugin schreiben
         if (erstelleLobby) {
-            File cloudSignPluginDir = new File("templates/lobby/plugins/CloudSignPlugin");
+            File cloudSignPluginDir = new File("templates/lobby/plugins/CloudBridge");
             if (!cloudSignPluginDir.exists()) {
                 if (cloudSignPluginDir.mkdirs()) {
                     printInfo("Ordner " + cloudSignPluginDir.getPath() + " wurde erstellt.");
