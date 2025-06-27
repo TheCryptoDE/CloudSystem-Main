@@ -185,6 +185,9 @@ public class SetupManager {
                     );
                 }
 
+                saveMySQLConfigInBungeeCordTemplate(proxyTemplate);
+                erstelleMySQLPermissionTabellen(MySQLConfig.loadFromFile(new File("mysql.json")));
+
                 printSuccess("BungeeCord Template wurde erstellt.");
             } catch (IOException e) {
                 printError("Fehler beim Erstellen des Proxys: " + e.getMessage());
@@ -193,6 +196,71 @@ public class SetupManager {
 
         printSuccess("Setup abgeschlossen. Bitte starte die Cloud neu.");
         return socketPort;
+    }
+
+
+    private static void erstelleMySQLPermissionTabellen(MySQLConfig config) {
+        String jdbcUrl = "jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + "?useSSL=false&autoReconnect=true";
+        try (java.sql.Connection connection = java.sql.DriverManager.getConnection(jdbcUrl, config.getUser(), config.getPassword())) {
+            try (java.sql.Statement stmt = connection.createStatement()) {
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `permsgroups` (\n" +
+                        "  `name` VARCHAR(50) NOT NULL,\n" +
+                        "  PRIMARY KEY (`name`)\n" +
+                        ");");
+
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `group_permissions` (\n" +
+                        "  `group_name` VARCHAR(50) NOT NULL,\n" +
+                        "  `permission` VARCHAR(255) NOT NULL,\n" +
+                        "  FOREIGN KEY (`group_name`) REFERENCES `permsgroups`(`name`) ON DELETE CASCADE\n" +
+                        ");");
+
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `player_groups` (\n" +
+                        "  `uuid` VARCHAR(36) NOT NULL,\n" +
+                        "  `group_name` VARCHAR(50) NOT NULL,\n" +
+                        "  FOREIGN KEY (`group_name`) REFERENCES `permsgroups`(`name`) ON DELETE CASCADE\n" +
+                        ");");
+
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `permissions` (\n" +
+                        "  `uuid` VARCHAR(36) NOT NULL,\n" +
+                        "  `permission` VARCHAR(255) NOT NULL\n" +
+                        ");");
+
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `signs` (\n" +
+                        "  `id` INT(11) NOT NULL AUTO_INCREMENT,\n" +
+                        "  `world` VARCHAR(64) DEFAULT NULL,\n" +
+                        "  `x` INT(11) DEFAULT NULL,\n" +
+                        "  `y` INT(11) DEFAULT NULL,\n" +
+                        "  `z` INT(11) DEFAULT NULL,\n" +
+                        "  `server` VARCHAR(64) DEFAULT NULL,\n" +
+                        "  PRIMARY KEY (`id`)\n" +
+                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+
+                printSuccess("MySQL Tabellen für Berechtigungen erfolgreich erstellt.");
+            }
+        } catch (Exception e) {
+            printError("Fehler beim Erstellen der Tabellen: " + e.getMessage());
+        }
+    }
+
+
+    private static void saveMySQLConfigInBungeeCordTemplate(File proxyTemplate) {
+        // Die mysql.json aus dem Hauptverzeichnis laden und hierher kopieren
+        File mainMySQL = new File("mysql.json");
+        if (!mainMySQL.exists()) {
+            printWarn("mysql.json im Hauptverzeichnis nicht gefunden, überspringe Kopieren in BungeeCord Template.");
+            return;
+        }
+
+        File proxyMySQL = new File(proxyTemplate, "mysql.json");
+        try (Scanner scanner = new Scanner(mainMySQL);
+             FileWriter writer = new FileWriter(proxyMySQL)) {
+            while (scanner.hasNextLine()) {
+                writer.write(scanner.nextLine() + System.lineSeparator());
+            }
+            printSuccess("mysql.json in BungeeCord Template gespeichert: " + proxyMySQL.getPath());
+        } catch (IOException e) {
+            printError("Fehler beim Kopieren der mysql.json in BungeeCord Template: " + e.getMessage());
+        }
     }
 
     public static void frageMySQLDaten(Scanner scanner, boolean erstelleLobby) {
