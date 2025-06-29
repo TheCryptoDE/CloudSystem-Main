@@ -234,6 +234,13 @@ public class SetupManager {
                         "  `server` VARCHAR(64) DEFAULT NULL,\n" +
                         "  PRIMARY KEY (`id`)\n" +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+                stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `started_servers` (" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT," +
+                        "`server_name` varchar(255) NOT NULL," +
+                        "`template` varchar(255) DEFAULT NULL," +
+                        "`started_at` timestamp NOT NULL DEFAULT current_timestamp()," +
+                        "PRIMARY KEY (`id`)" +
+                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 
                 printSuccess("MySQL Tabellen für Berechtigungen erfolgreich erstellt.");
             }
