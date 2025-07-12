@@ -46,7 +46,7 @@ public class SetupManager {
             lobbyTemplate.mkdirs();
 
             if (environment.equals("MINECRAFT_SERVER")) {
-                printInfo("Lade Spigot server.jar für Lobby herunter...");
+                printInfo("Download Spigot server.jar for Lobby...");
                 try {
                     CloudSystem.downloadFileStatic("https://s3.mcjars.app/spigot/1.21.4/4458/server.jar", new File(lobbyTemplate, "server.jar"));
                     CloudSystem.createServerPropertiesStatic(new File(lobbyTemplate, "server.properties"), 25566, "Lobby Server", 20);
@@ -87,26 +87,26 @@ public class SetupManager {
                     cloudSignPluginDir.mkdirs();
 
                     // Jetzt den CloudSign Plugin Download starten
-                    printInfo("Lade CloudSignPlugin herunter...");
+                    printInfo("Download CloudSignPlugin...");
                     CloudSystem.downloadFileStatic(
                             "https://github.com/TheCryptoDE/CloudSystem-SignSpigot/releases/download/1.0.1/CloudSystem-CloudBridge-1.0-SNAPSHOT.jar",
                             new File(lobbyTemplate, "plugins/CloudBridge.jar")
                     );
 
-                    printSuccess("CloudSignPlugin wurde erfolgreich heruntergeladen.");
+                    printSuccess("CloudSignPlugin has been downloaded successfully.");
 
                     // MySQL wird später noch zusätzlich für CloudSign gespeichert
 
                     Group lobbyGroup = new Group("Lobby", "spigot", "static", 1, 20);
                     groupManager.addGroup(lobbyGroup);
-                    printSuccess("Lobby Template wurde erstellt.");
+                    printSuccess("Lobby template has been created.");
                 } catch (IOException e) {
-                    printError("Fehler beim Erstellen der Lobby: " + e.getMessage());
+                    printError("Error when creating the lobby: " + e.getMessage());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                printInfo("Lobby Template wird ohne Spigot server.jar erstellt, da Umgebung nicht MINECRAFT_SERVER ist.");
+                printInfo("Lobby template is created without Spigot server.jar because the environment is not MINECRAFT_SERVER.");
             }
         }
 
@@ -116,7 +116,7 @@ public class SetupManager {
             File proxyTemplate = new File(CloudSystem.templatesDir, "bungeecord");
             proxyTemplate.mkdirs();
 
-            printInfo("Lade BungeeCord.jar herunter...");
+            printInfo("Download BungeeCord.jar...");
             try {
                 CloudSystem.downloadFileStatic("https://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar",
                         new File(proxyTemplate, "BungeeCord.jar"));
@@ -188,13 +188,13 @@ public class SetupManager {
                 saveMySQLConfigInBungeeCordTemplate(proxyTemplate);
                 erstelleMySQLPermissionTabellen(MySQLConfig.loadFromFile(new File("mysql.json")));
 
-                printSuccess("BungeeCord Template wurde erstellt.");
+                printSuccess("BungeeCord template was created.");
             } catch (IOException e) {
-                printError("Fehler beim Erstellen des Proxys: " + e.getMessage());
+                printError("Error when creating the proxy: " + e.getMessage());
             }
         }
 
-        printSuccess("Setup abgeschlossen. Bitte starte die Cloud neu.");
+        printSuccess("Setup completed. Please restart the cloud.");
         return socketPort;
     }
 
@@ -242,10 +242,10 @@ public class SetupManager {
                         "PRIMARY KEY (`id`)" +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 
-                printSuccess("MySQL Tabellen für Berechtigungen erfolgreich erstellt.");
+                printSuccess("MySQL tables for authorizations successfully created.");
             }
         } catch (Exception e) {
-            printError("Fehler beim Erstellen der Tabellen: " + e.getMessage());
+            printError("Error when creating the tables: " + e.getMessage());
         }
     }
 
@@ -254,7 +254,7 @@ public class SetupManager {
         // Die mysql.json aus dem Hauptverzeichnis laden und hierher kopieren
         File mainMySQL = new File("mysql.json");
         if (!mainMySQL.exists()) {
-            printWarn("mysql.json im Hauptverzeichnis nicht gefunden, überspringe Kopieren in BungeeCord Template.");
+            printWarn("mysql.json not found in root directory, skip copying to BungeeCord template.");
             return;
         }
 
@@ -264,53 +264,53 @@ public class SetupManager {
             while (scanner.hasNextLine()) {
                 writer.write(scanner.nextLine() + System.lineSeparator());
             }
-            printSuccess("mysql.json in BungeeCord Template gespeichert: " + proxyMySQL.getPath());
+            printSuccess("mysql.json saved in BungeeCord template: " + proxyMySQL.getPath());
         } catch (IOException e) {
-            printError("Fehler beim Kopieren der mysql.json in BungeeCord Template: " + e.getMessage());
+            printError("Error copying mysql.json to BungeeCord template: " + e.getMessage());
         }
     }
 
     public static void frageMySQLDaten(Scanner scanner, boolean erstelleLobby) {
         System.out.println(ANSI_YELLOW + "MySQL Konfiguration:" + ANSI_RESET);
 
-        System.out.print("MySQL Host (Standard: localhost): ");
+        System.out.print("MySQL host (default: localhost): ");
         String host = scanner.nextLine().trim();
         if (host.isEmpty()) host = "localhost";
 
-        System.out.print("MySQL Port (Standard: 3306): ");
+        System.out.print("MySQL Port (default: 3306): ");
         String portInput = scanner.nextLine().trim();
         int port = 3306;
         if (!portInput.isEmpty()) {
             try {
                 port = Integer.parseInt(portInput);
             } catch (NumberFormatException e) {
-                printWarn("Ungültiger Port. Verwende Standard-Port 3306.");
+                printWarn("Invalid port. Use standard port 3306.");
             }
         }
 
-        System.out.print("MySQL Benutzer (z.B. root): ");
+        System.out.print("MySQL user (z.B. root): ");
         String user = scanner.nextLine().trim();
         while (user.isEmpty()) {
-            printWarn("Der Benutzername darf nicht leer sein.");
-            System.out.print("MySQL Benutzer: ");
+            printWarn("Der username darf nicht leer sein.");
+            System.out.print("MySQL user: ");
             user = scanner.nextLine().trim();
         }
 
-        System.out.print("MySQL Passwort (leer lassen für kein Passwort): ");
+        System.out.print("MySQL password (leave blank for no password): ");
         String password = scanner.nextLine();
         if (password.isEmpty()) password = null;
 
-        System.out.print("MySQL Datenbankname (z.B. cloudsystem): ");
+        System.out.print("MySQL database name (e.g. cloudsystem): ");
         String database = scanner.nextLine().trim();
         while (database.isEmpty()) {
-            printWarn("Der Datenbankname darf nicht leer sein.");
-            System.out.print("MySQL Datenbankname: ");
+            printWarn("The database name must not be empty.");
+            System.out.print("MySQL database name: ");
             database = scanner.nextLine().trim();
         }
 
         MySQLConfig config = new MySQLConfig(host, port, user, password, database);
         saveMySQLConfig(config, erstelleLobby);
-        printSuccess("MySQL-Daten gespeichert.");
+        printSuccess("MySQL data saved.");
     }
 
 
@@ -327,9 +327,9 @@ public class SetupManager {
         File mainFile = new File("mysql.json");
         try (FileWriter writer = new FileWriter(mainFile)) {
             gson.toJson(config, writer);
-            printSuccess("MySQL-Daten gespeichert in mysql.json.");
+            printSuccess("MySQL data saved in mysql.json.");
         } catch (IOException e) {
-            printError("Fehler beim Speichern der MySQL-Konfiguration: " + e.getMessage());
+            printError("Error saving MySQL configuration: " + e.getMessage());
         }
 
         // Wenn Lobby erstellt werden soll, zusätzlich ins CloudSignPlugin schreiben
@@ -337,9 +337,9 @@ public class SetupManager {
             File cloudSignPluginDir = new File("templates/lobby/plugins/CloudBridge");
             if (!cloudSignPluginDir.exists()) {
                 if (cloudSignPluginDir.mkdirs()) {
-                    printInfo("Ordner " + cloudSignPluginDir.getPath() + " wurde erstellt.");
+                    printInfo("Folder " + cloudSignPluginDir.getPath() + " has been created.");
                 } else {
-                    printError("Konnte den Ordner " + cloudSignPluginDir.getPath() + " nicht erstellen.");
+                    printError("Could not create the folder " + cloudSignPluginDir.getPath() + ".");
                     return;
                 }
             }
@@ -347,9 +347,9 @@ public class SetupManager {
             File pluginMySQLFile = new File(cloudSignPluginDir, "mysql.json");
             try (FileWriter writer = new FileWriter(pluginMySQLFile)) {
                 gson.toJson(config, writer);
-                printSuccess("MySQL-Daten zusätzlich in " + pluginMySQLFile.getPath() + " gespeichert.");
+                printSuccess("MySQL data additionally saved in " + pluginMySQLFile.getPath() + ".");
             } catch (IOException e) {
-                printError("Fehler beim Speichern der MySQL-Konfiguration im Plugin-Ordner: " + e.getMessage());
+                printError("Error saving MySQL configuration in plugin folder: " + e.getMessage());
             }
         }
     }
@@ -358,7 +358,7 @@ public class SetupManager {
 
 
     public static int frageSocketPort(Scanner scanner) {
-        System.out.println(ANSI_YELLOW + "Auf welchem Port soll die Cloud Socket-Verbindung starten? (Standard: 9100)" + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "Which port should the Cloud Socket connection use? (Default: 9100)" + ANSI_RESET);
         System.out.print("> ");
         String input = scanner.nextLine().trim();
 
@@ -368,57 +368,57 @@ public class SetupManager {
                 port = Integer.parseInt(input);
                 if (port < 1000 || port > 65535) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                printWarn("Ungültiger Port. Verwende Standard-Port 9100.");
+                printWarn("Invalid port. Using default port 9100.");
                 port = 9100;
             }
         }
-        printSuccess("Cloud Socket-Port gesetzt auf: " + port);
+        printSuccess("Cloud socket port set to: " + port);
         return port;
     }
 
     public static String frageServerUmgebung(Scanner scanner) {
-        System.out.println(ANSI_YELLOW + "Welche Umgebung sollen die Server nutzen?" + ANSI_RESET);
-        System.out.println(" > Mögliche Antworten: MINECRAFT_SERVER, GLOWSTONE, NUKKIT, GO_MINT");
+        System.out.println(ANSI_YELLOW + "Which environment should the servers use?" + ANSI_RESET);
+        System.out.println(" > Possible answers: MINECRAFT_SERVER, GLOWSTONE, NUKKIT, GO_MINT");
         System.out.print("> ");
         String env = scanner.nextLine().trim().toUpperCase();
 
         while (!env.matches("MINECRAFT_SERVER|GLOWSTONE|NUKKIT|GO_MINT")) {
-            printWarn("Ungültige Eingabe. Bitte wähle eine der genannten Umgebungen.");
+            printWarn("Invalid input. Please choose one of the listed environments.");
             System.out.print("> ");
             env = scanner.nextLine().trim().toUpperCase();
         }
 
-        printSuccess("Server-Umgebung gesetzt auf: " + env);
+        printSuccess("Server environment set to: " + env);
         return env;
     }
 
     public static boolean frageProxyErstellung(Scanner scanner) {
-        System.out.println(ANSI_YELLOW + "Soll ein Standard-Proxy erstellt werden?" + ANSI_RESET);
-        System.out.println(" > Mögliche Antworten: yes, no");
+        System.out.println(ANSI_YELLOW + "Should a default proxy be created?" + ANSI_RESET);
+        System.out.println(" > Possible answers: yes, no");
         System.out.print("> ");
-        String eingabe = scanner.nextLine().trim().toLowerCase();
+        String input = scanner.nextLine().trim().toLowerCase();
 
-        while (!eingabe.equals("yes") && !eingabe.equals("no")) {
-            printWarn("Ungültige Eingabe. Bitte gib \"yes\" oder \"no\" ein.");
+        while (!input.equals("yes") && !input.equals("no")) {
+            printWarn("Invalid input. Please enter \"yes\" or \"no\".");
             System.out.print("> ");
-            eingabe = scanner.nextLine().trim().toLowerCase();
+            input = scanner.nextLine().trim().toLowerCase();
         }
 
-        return eingabe.equals("yes");
+        return input.equals("yes");
     }
 
     public static boolean frageLobbyErstellung(Scanner scanner) {
-        System.out.println(ANSI_YELLOW + "Soll eine Standard-Lobby erstellt werden?" + ANSI_RESET);
-        System.out.println(" > Mögliche Antworten: yes, no");
+        System.out.println(ANSI_YELLOW + "Should a default lobby be created?" + ANSI_RESET);
+        System.out.println(" > Possible answers: yes, no");
         System.out.print("> ");
-        String eingabe = scanner.nextLine().trim().toLowerCase();
+        String input = scanner.nextLine().trim().toLowerCase();
 
-        while (!eingabe.equals("yes") && !eingabe.equals("no")) {
-            printWarn("Ungültige Eingabe. Bitte gib \"yes\" oder \"no\" ein.");
+        while (!input.equals("yes") && !input.equals("no")) {
+            printWarn("Invalid input. Please enter \"yes\" or \"no\".");
             System.out.print("> ");
-            eingabe = scanner.nextLine().trim().toLowerCase();
+            input = scanner.nextLine().trim().toLowerCase();
         }
 
-        return eingabe.equals("yes");
+        return input.equals("yes");
     }
 }

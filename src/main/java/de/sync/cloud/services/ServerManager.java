@@ -28,12 +28,12 @@ public class ServerManager {
     public void startServer(String serverName, String groupName, int port) throws IOException {
         Group group = groupManager.getGroup(groupName);
         if (group == null) {
-            throw new IllegalArgumentException("Gruppe existiert nicht: " + groupName);
+            throw new IllegalArgumentException("Group does not exist: " + groupName);
         }
 
         File templateFolder = new File(templatesDir, groupName);
         if (!templateFolder.exists() || !templateFolder.isDirectory()) {
-            throw new IOException("Template-Ordner existiert nicht für Gruppe: " + groupName);
+            throw new IOException("Template folder does not exist for group: " + groupName);
         }
 
         File serverFolder = new File(serversDir, serverName);
@@ -56,7 +56,7 @@ public class ServerManager {
         Process process = startJavaProcess(serverFolder, group.getType());
         runningServers.put(serverName, process);
 
-        System.out.println("Server " + serverName + " (Gruppe " + groupName + ") gestartet auf Port " + port);
+        System.out.println("Server " + serverName + " (Group " + groupName + ") started on port " + port);
     }
 
     public void stopServer(String serverName) {
@@ -125,7 +125,7 @@ public class ServerManager {
         }
 
         // javaw statt java = unsichtbarer Prozessstart unter Windows
-        ProcessBuilder pb = new ProcessBuilder("javaw", "-Xmx1G", "-jar", jarFile.getName(), "nogui");
+        ProcessBuilder pb = new ProcessBuilder("javaw", "-Xmx3G", "-jar", jarFile.getName(), "nogui");
         pb.directory(serverFolder);
 
         // Output nicht an Konsole weiterleiten, komplett unterdrücken

@@ -24,7 +24,7 @@ public class GroupCreateTask implements Task {
 
         String action = args[1];
         if (!action.equalsIgnoreCase("create")) {
-            System.out.println("Unbekannter group-Befehl: " + action);
+            System.out.println("Unbekannter group-command: " + action);
             return;
         }
 
@@ -36,7 +36,7 @@ public class GroupCreateTask implements Task {
         try {
             minServer = Integer.parseInt(args[5]);
         } catch (NumberFormatException e) {
-            System.out.println("minserver muss eine Zahl sein.");
+            System.out.println("minserver must be a number.");
             return;
         }
 
@@ -44,20 +44,20 @@ public class GroupCreateTask implements Task {
         try {
             maxPlayers = Integer.parseInt(args[6]);
         } catch (NumberFormatException e) {
-            System.out.println("maxplayers muss eine Zahl sein.");
+            System.out.println("maxplayers must be a number.");
             return;
         }
 
         if (!type.equals("spigot") && !type.equals("bungeecord")) {
-            System.out.println("Type muss 'spigot' oder 'bungeecord' sein.");
+            System.out.println("Type must be ‘spigot’ or ‘bungeecord’.");
             return;
         }
         if (!staticFlag.equals("static") && !staticFlag.equals("nostatic")) {
-            System.out.println("staticFlag muss 'static' oder 'nostatic' sein.");
+            System.out.println("staticFlag must be ‘static’ or ‘nostatic’.");
             return;
         }
         if (minServer < 0 || maxPlayers <= 0) {
-            System.out.println("minserver muss >= 0 und maxplayers > 0 sein.");
+            System.out.println("minserver must be >= 0 and maxplayers > 0.");
             return;
         }
 
@@ -65,9 +65,9 @@ public class GroupCreateTask implements Task {
 
         try {
             groupManager.addGroup(group);
-            System.out.println("Gruppe '" + groupName + "' erfolgreich erstellt.");
+            System.out.println("Group ‘“ + groupName + ”’ successfully created.");
         } catch (SQLException e) {
-            System.out.println("Fehler beim Erstellen der Gruppe: " + e.getMessage());
+            System.out.println("Error when creating the group: " + e.getMessage());
         }
     }
 }

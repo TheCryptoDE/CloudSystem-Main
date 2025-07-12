@@ -211,7 +211,7 @@ public class CloudSystem {
 
     public void startSocketListener() throws IOException {
         serverSocket = new ServerSocket(SOCKET_PORT);
-        new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Cloud Socket Listener auf Port " + SOCKET_PORT);
+        new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Cloud socket listener on port " + SOCKET_PORT);
         while (true) {
             Socket client = serverSocket.accept();
             new Thread(() -> handleClient(client)).start();
@@ -220,10 +220,10 @@ public class CloudSystem {
 
     public static synchronized void stopServer(String serverName) throws IOException {
         ServerProcess sp = runningServers.get(serverName);
-        if (sp == null) throw new IOException("Server nicht gefunden");
+        if (sp == null) throw new IOException("Server not found");
         sp.process.destroy();
         runningServers.remove(serverName);
-        new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Server " + serverName + " gestoppt.");
+        new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Server " + serverName + " stopped.");
     }
     private void startGroupServers(GroupManager groupManager) {
         for (Group group : groupManager.getGroups()) {
@@ -239,7 +239,7 @@ public class CloudSystem {
                     // Starte lokalen Server (Minecraft-Server etc)
                //     startServer(serverName, groupName, port, false, true);
                     createServiceJson(serverName, port);
-                    new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "Server " + serverName + " gestartet auf Port " + port);
+                    new Loggers(LoggersType.SUCCESS, Loggers.useColorSystem, "Server " + serverName + " started on port" + port);
 
                     // Informiere BungeeCord Proxy Plugin per Socket
                     new Timer().schedule(new TimerTask() {
@@ -249,7 +249,7 @@ public class CloudSystem {
                         }
                     }, 8000);
                 } catch (Exception e) {
-                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Starten von Server " + serverName + ": " + e.getMessage());
+                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Error when starting server " + serverName + ": " + e.getMessage());
                 }
             }
         }
@@ -267,7 +267,7 @@ public class CloudSystem {
 
             String authResponse = in.readLine();
             if (!"AUTH_OK".equals(authResponse)) {
-                new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Auth beim Bungee Proxy fehlgeschlagen!");
+                new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Auth failed at bungee proxy!");
                 return;
             }
 
@@ -317,19 +317,56 @@ public class CloudSystem {
         }
     }
 
+    private void deleteDirectory(File directory) throws IOException {
+        if (!directory.exists()) return;
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    if (!file.delete()) {
+                        throw new IOException("Konnte Datei nicht löschen: " + file.getAbsolutePath());
+                    }
+                }
+            }
+        }
+
+        if (!directory.delete()) {
+            throw new IOException("Konnte Verzeichnis nicht löschen: " + directory.getAbsolutePath());
+        }
+    }
+
     private void initCommands() {
         commands.put("stop", args -> {
-            new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Stoppe alle Server...");
+            new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Stop all servers...");
+
             for (String server : new ArrayList<>(runningServers.keySet())) {
                 try {
                     stopServer(server);
                 } catch (IOException e) {
-                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Stoppen von " + server + ": " + e.getMessage());
+                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Error when stopping " + server + ": " + e.getMessage());
                 }
             }
-            PrintInfo.printSuccess("Alle Server gestoppt. Cloud wird beendet.");
+
+            // Versuche den 'servers'-Ordner zu löschen
+            File serversFolder = new File("servers");
+            if (serversFolder.exists()) {
+                try {
+                    deleteDirectory(serversFolder);
+                    new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Ordner 'servers' wurde erfolgreich gelöscht.");
+                } catch (IOException e) {
+                    new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Löschen des 'servers'-Ordners: " + e.getMessage());
+                }
+            } else {
+                new Loggers(LoggersType.INFO, Loggers.useColorSystem, "Ordner 'servers' existiert nicht – übersprungen.");
+            }
+
+            PrintInfo.printSuccess("All servers stopped. Cloud is terminated.");
             System.exit(0);
         });
+
 
         try {
             // MySQL-Daten aus mysql.json laden
@@ -360,13 +397,13 @@ public class CloudSystem {
             commands.put("version", new CloudVersionCommand());
 
 
-            printSuccess("MySQL-Verbindung erfolgreich aufgebaut.");
+            printSuccess("MySQL connection successfully established.");
 
         } catch (IOException e) {
-            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler beim Laden der MySQL-Konfiguration: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Error loading the MySQL configuration: " + e.getMessage());
             System.exit(1);
         } catch (SQLException e) {
-            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Fehler bei der MySQL-Verbindung: " + e.getMessage());
+            new Loggers(LoggersType.ERROR, Loggers.useColorSystem, "Error with the MySQL connection: " + e.getMessage());
             System.exit(1);
         }
     }

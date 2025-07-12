@@ -26,7 +26,7 @@ public class ProxyWatchdog {
 
                     String authResponse = in.readLine();
                     if (!"AUTH_OK".equals(authResponse)) {
-                        printWarn("Watchdog: Authentifizierung fehlgeschlagen.");
+                        printWarn("Watchdog: Authentication failed.");
                         continue;
                     }
 
@@ -40,19 +40,19 @@ public class ProxyWatchdog {
 
                     String statusResponse = in.readLine();
                     if (statusResponse == null || statusResponse.startsWith("ERROR")) {
-                        printWarn("Watchdog: BungeeCord nicht erreichbar. Versuche zu starten...");
+                        printWarn("Watchdog: BungeeCord not reachable. Attempts to start...");
                         restartBungeeCord();
                     }
 
                 } catch (IOException e) {
-                    printWarn("Watchdog: BungeeCord Verbindung fehlgeschlagen. Starte neu...");
+                    printWarn("BungeeCord connection failed. Restart...");
                     restartBungeeCord();
                 }
 
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
-                    printError("Watchdog unterbrochen: " + e.getMessage());
+                    printError("Watchdog Failed: " + e.getMessage());
                     break;
                 }
             }
@@ -64,10 +64,10 @@ public class ProxyWatchdog {
         try {
             if (!runningServers.containsKey("BungeeCordProxy")) {
                 startServer("BungeeCordProxy", "bungeecord", PROXY_PORT, true, true);
-                printSuccess("Watchdog: BungeeCord wurde neu gestartet.");
+                printSuccess("Watchdog: BungeeCord has been restarted.");
             }
         } catch (Exception ex) {
-            printError("Watchdog: Fehler beim Neustarten von BungeeCord: " + ex.getMessage());
+            printError("Watchdog: Error when restarting BungeeCord: " + ex.getMessage());
         }
     }
 }

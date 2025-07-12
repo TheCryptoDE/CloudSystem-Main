@@ -56,7 +56,7 @@ public class GroupManager {
 
     public void addGroup(Group group) throws SQLException {
         if (groupExists(group.getGroupName())) {
-            throw new SQLException("Gruppe existiert bereits: " + group.getGroupName());
+            throw new SQLException("Group already exists: " + group.getGroupName());
         }
 
         try (PreparedStatement stmt = connection.prepareStatement(
@@ -79,14 +79,14 @@ public class GroupManager {
 
         if (!groupFolder.exists()) {
             if (groupFolder.mkdirs()) {
-                System.out.println("Template-Ordner für Gruppe '" + group.getGroupName() + "' erstellt.");
+                System.out.println("Template folder for group " + group.getGroupName() + " created.");
 
                 // Spigot 1.21.4 herunterladen und direkt als server.jar speichern
                 try {
                     downloadAndRenameSpigotJar(templatesPath);
-                    System.out.println("Spigot 1.21.4 heruntergeladen und umbenannt zu server.jar.");
+                    System.out.println("Spigot 1.21.4 downloaded and renamed to server.jar.");
                 } catch (IOException e) {
-                    System.err.println("Fehler beim Herunterladen der Spigot.jar: " + e.getMessage());
+                    System.err.println("Error downloading the Spigot.jar: " + e.getMessage());
                 }
 
                 // server.properties erstellen
@@ -97,10 +97,10 @@ public class GroupManager {
                 createEulaTxt(templatesPath);
 
             } else {
-                System.err.println("Konnte Template-Ordner für Gruppe '" + group.getGroupName() + "' nicht erstellen.");
+                System.err.println("Could not create template folder for group ‘" + group.getGroupName() + "’");
             }
         } else {
-            System.out.println("Template für Gruppe '" + group.getGroupName() + "' existiert bereits.");
+            System.out.println("Template for group " + group.getGroupName() + " already exists.");
         }
     }
 
@@ -118,7 +118,7 @@ public class GroupManager {
         try (PrintWriter writer = new PrintWriter(file)) {
             writer.println("server-port=25565");
             writer.println("max-players=20");
-            writer.println("motd=Ein neuer Server von CloudSystem");
+            writer.println("motd=A new server from CloudSystem");
             writer.println("online-mode=false");
             writer.println("level-name=world");
         } catch (IOException e) {

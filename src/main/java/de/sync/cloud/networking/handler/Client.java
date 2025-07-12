@@ -24,7 +24,7 @@ public class Client {
 
             String auth = in.readLine();
             if (auth == null || !auth.equals("AUTH " + AUTH_PASSWORD)) {
-                out.write("ERROR Auth fehlgeschlagen\n");
+                out.write("ERROR Auth Failed\n");
                 out.flush();
                 socket.close();
                 return;
@@ -76,7 +76,7 @@ public class Client {
                         String serverName = json.get("serverName").getAsString();
                         CloudSystem.ServerProcess sp = runningServers.get(serverName);
                         if (sp == null) {
-                            out.write("ERROR Server nicht gefunden\n");
+                            out.write("ERROR Server not Found\n");
                         } else {
                             out.write("STATUS " + serverName + " ONLINE\n");
                         }
@@ -94,7 +94,7 @@ public class Client {
                             try {
                                 stopServer(server);
                             } catch (IOException e) {
-                                printError("Fehler beim Stoppen von " + server + ": " + e.getMessage());
+                                printError("Error when stopping " + server + ": " + e.getMessage());
                             }
                         }
                         out.write("ALL_SERVERS_STOPPED\n");
@@ -102,7 +102,7 @@ public class Client {
                         break;
 
                     default:
-                        out.write("ERROR Unbekannter Befehl\n");
+                        out.write("ERROR unknown command\n");
                         out.flush();
                 }
             } else if (line.startsWith("cloud startserver")) {
@@ -111,12 +111,12 @@ public class Client {
                 out.write("COMMAND_RECEIVED\n");
                 out.flush();
             } else {
-                out.write("ERROR Unbekannter Befehl\n");
+                out.write("ERROR unknown command\n");
                 out.flush();
             }
 
         } catch (IOException e) {
-            printError("Fehler in handleClient: " + e.getMessage());
+            printError("ERROR in handleClient: " + e.getMessage());
         }
     }
 

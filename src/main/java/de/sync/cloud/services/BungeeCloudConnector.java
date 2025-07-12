@@ -26,7 +26,7 @@ public class BungeeCloudConnector {
 
             String authResp = in.readLine();
             if (!"AUTH_OK".equals(authResp)) {
-                throw new IOException("Auth fehlgeschlagen");
+                throw new IOException("Auth failed");
             }
 
             out.write(json.toString() + "\n");
@@ -34,7 +34,7 @@ public class BungeeCloudConnector {
 
             String response = in.readLine();
             if (response == null || !response.startsWith("SERVER_STARTED")) {
-                throw new IOException("Server konnte nicht registriert werden: " + response);
+                throw new IOException("Server could not be registered: " + response);
             }
         }
     }
@@ -53,7 +53,7 @@ public class BungeeCloudConnector {
 
             String authResp = in.readLine();
             if (!"AUTH_OK".equals(authResp)) {
-                throw new IOException("Auth fehlgeschlagen");
+                throw new IOException("Auth failed");
             }
 
             out.write(json.toString() + "\n");
@@ -61,7 +61,7 @@ public class BungeeCloudConnector {
 
             String response = in.readLine();
             if (response == null || !response.startsWith("SERVER_STOPPED")) {
-                throw new IOException("Server konnte nicht abgemeldet werden: " + response);
+                throw new IOException("Server could not be logged off: " + response);
             }
         }
     }

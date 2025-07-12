@@ -1,7 +1,9 @@
 package de.sync.cloud.networking;
 
+import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.ConsoleHandler;
 
 public class PrintInfo {
 
@@ -40,7 +42,6 @@ public class PrintInfo {
         String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
         System.out.print(ANSI_LIGHT_BLUE + "[" + timeStamp + "] > " + ANSI_RESET);
     }
-
 
     public static void printHeader() {
         String line = "═══════════════════════════════════════════════════════════════════════";

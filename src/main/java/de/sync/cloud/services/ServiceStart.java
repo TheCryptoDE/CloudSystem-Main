@@ -18,10 +18,10 @@ public class ServiceStart {
     public static final List<StartedServer> startedServers = Collections.synchronizedList(new ArrayList<>());
 
     public static synchronized void startServer(String serverName, String templateName, int port, boolean isProxy, boolean silent) throws IOException {
-        if (runningServers.containsKey(serverName)) throw new IOException("Server existiert bereits");
+        if (runningServers.containsKey(serverName)) throw new IOException("Server already exists");
 
         File template = new File(templatesDir, templateName);
-        if (!template.exists()) throw new IOException("Template nicht gefunden " + templateName);
+        if (!template.exists()) throw new IOException("Template not found " + templateName);
 
         File serverFolder = new File(serversDir, serverName);
         if (!serverFolder.exists()) copyFolder(template.toPath(), serverFolder.toPath());
@@ -43,16 +43,31 @@ public class ServiceStart {
             if (propsFile.exists()) {
                 List<String> lines = Files.readAllLines(propsFile.toPath());
                 List<String> newLines = new ArrayList<>();
+                boolean foundPort = false;
+                boolean foundResourcePack = false;
+
                 for (String line : lines) {
-                    newLines.add(line.startsWith("server-port=") ? "server-port=" + port : line);
+                    if (line.startsWith("server-port=")) {
+                        newLines.add("server-port=" + port);
+                        foundPort = true;
+                    } else if (line.startsWith("resource-pack=")) {
+                        newLines.add("resource-pack=" + serverName);
+                        foundResourcePack = true;
+                    } else {
+                        newLines.add(line);
+                    }
                 }
+
+                if (!foundPort) newLines.add("server-port=" + port);
+                if (!foundResourcePack) newLines.add("resource-pack=" + serverName);
+
                 Files.write(propsFile.toPath(), newLines);
             }
         }
 
         ProcessBuilder pb = isProxy
-                ? new ProcessBuilder("java", "-Xmx512M", "-jar", "BungeeCord.jar")
-                : new ProcessBuilder("java", "-Xmx512M", "-jar", "server.jar", "nogui");
+                ? new ProcessBuilder("java", "-Xmx100G", "-jar", "BungeeCord.jar")
+                : new ProcessBuilder("java", "-Xmx3G", "-jar", "server.jar", "nogui");
 
         pb.directory(serverFolder);
         pb.redirectErrorStream(true);
@@ -70,12 +85,13 @@ public class ServiceStart {
                     if (!silent) System.out.println("[" + serverName + "] " + line);
                 }
             } catch (IOException e) {
-                printError("Fehler beim Lesen der Serverausgabe: " + e.getMessage());
+                printError("Error reading the server output: " + e.getMessage());
             }
         }).start();
 
-        PrintInfo.printSuccess("Server " + serverName + " gestartet auf Port " + port);
+        PrintInfo.printSuccess("Server " + serverName + " started on port " + port);
     }
+
 
     public static class StartedServer {
         private final String name;

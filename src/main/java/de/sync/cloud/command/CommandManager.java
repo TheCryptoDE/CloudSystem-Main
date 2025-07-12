@@ -27,7 +27,7 @@ public class CommandManager {
     public void executeCommand(String input) {
         String[] args = input.trim().split("\\s+");
         if (args.length == 0 || args[0].isEmpty()) {
-            System.out.println("Ungültiger Befehl. Nutze 'help' für eine Liste.");
+            System.out.println("Invalid command. Use ‘help’ for a list.");
             return;
         }
 
@@ -38,12 +38,12 @@ public class CommandManager {
             try {
                 task.execute(args);
             } catch (Exception e) {
-                System.out.println("Fehler bei der Ausführung: " + e.getMessage());
+                System.out.println("Error during execution: " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
-            System.out.println("Unbekannter Befehl: " + commandKey);
-            System.out.println("Nutze 'help' für eine Liste aller Befehle.");
+            System.out.println("Unknown command: " + commandKey);
+            System.out.println("Use ‘help’ for a list of all commands.");
         }
     }
 }

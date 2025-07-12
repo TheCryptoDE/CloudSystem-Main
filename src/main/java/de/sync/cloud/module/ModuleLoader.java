@@ -29,7 +29,7 @@ public class ModuleLoader {
 
         File[] jarFiles = modulesDir.listFiles((dir, name) -> name.endsWith(".jar"));
         if (jarFiles == null || jarFiles.length == 0) {
-            PrintInfo.printModule("Keine Module im modules-Ordner gefunden.");
+            PrintInfo.printModule("No modules found in the modules folder.");
             return modules;
         }
 
@@ -48,10 +48,10 @@ public class ModuleLoader {
                                 if (Module.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers()) && !clazz.isInterface()) {
                                     Module module = (Module) clazz.getDeclaredConstructor().newInstance();
                                     modules.add(module);
-                                    PrintInfo.printModule("Modul geladen: " + module.getName());
+                                    PrintInfo.printModule("Module loaded: " + module.getName());
                                 }
                             } catch (Exception ex) {
-                                PrintInfo.printModule("Fehler beim Laden der Klasse " + className + ": " + ex.getMessage());
+                                PrintInfo.printModule("Error loading the class " + className + ": " + ex.getMessage());
                             }
                         });
                 }

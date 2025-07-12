@@ -21,7 +21,7 @@ public class CloudCommandHandler implements Runnable {
 
             switch (args[0].toLowerCase()) {
                 case "list":
-                    System.out.println("Laufende Server:");
+                    System.out.println("Running servers:");
                     serverManager.runningServers.keySet().forEach(System.out::println);
                     break;
                 case "startserver":
@@ -33,7 +33,7 @@ public class CloudCommandHandler implements Runnable {
                     try {
                         serverManager.startServer(args[1], args[2], port);
                     } catch (Exception e) {
-                        System.out.println("Fehler: " + e.getMessage());
+                        System.out.println("ERROR: " + e.getMessage());
                     }
                     break;
                 case "stopserver":
@@ -44,7 +44,7 @@ public class CloudCommandHandler implements Runnable {
                     serverManager.stopServer(args[1]);
                     break;
                 default:
-                    System.out.println("Unbekannter Befehl.");
+                    System.out.println("Unknown Befehl.");
             }
         }
     }

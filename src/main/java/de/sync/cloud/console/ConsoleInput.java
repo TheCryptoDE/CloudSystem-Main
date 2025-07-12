@@ -25,10 +25,10 @@ public class ConsoleInput {
                 try {
                     task.execute(parts);
                 } catch (Exception e) {
-                    printError("Fehler bei Command-Ausführung: " + e.getMessage());
+                    printError("Error during command execution: " + e.getMessage());
                 }
             } else {
-                printWarn("Unbekannter Befehl: " + line);
+                printWarn("Unknown command: " + line);
             }
         }
     }

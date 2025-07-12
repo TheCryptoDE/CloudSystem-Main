@@ -2,6 +2,9 @@ package de.sync.cloud.managers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
@@ -17,30 +20,53 @@ public class ServerManager {
         if (!serversDir.exists()) serversDir.mkdirs();
     }
 
+
+    private void sendMessageToBungee(String message) {
+        try (Socket socket = new Socket("127.0.0.1", 9100);
+             OutputStream output = socket.getOutputStream();
+             PrintWriter writer = new PrintWriter(output, true)) {
+            writer.println(message);
+        } catch (IOException e) {
+            System.err.println("Could not send message to Bungee: " + e.getMessage());
+        }
+    }
+
     // Server von Template starten
     public void startServer(String serverName, String templateName, int port) throws IOException {
         File template = new File(templatesDir, templateName);
-        if (!template.exists()) throw new IOException("Template nicht gefunden: " + templateName);
+        if (!template.exists()) throw new IOException("Template not found: " + templateName);
 
         File serverFolder = new File(serversDir, serverName);
         if (!serverFolder.exists()) {
             copyFolder(template, serverFolder);  // Template kopieren
         }
 
-        // server.properties anpassen (Port)
+        // server.properties bearbeiten
         File serverProps = new File(serverFolder, "server.properties");
         if (serverProps.exists()) {
-            // Einfach port ersetzen (ohne libs, quick & dirty)
             List<String> lines = Files.readAllLines(serverProps.toPath());
-            for (int i=0; i < lines.size(); i++) {
+
+            boolean foundPort = false;
+            boolean foundResourcePack = false;
+
+            for (int i = 0; i < lines.size(); i++) {
                 if (lines.get(i).startsWith("server-port=")) {
                     lines.set(i, "server-port=" + port);
+                    foundPort = true;
+                }
+                if (lines.get(i).startsWith("resource-pack=")) {
+                    lines.set(i, "resource-pack=" + serverName); // z. B. JumpIT-5
+                    foundResourcePack = true;
                 }
             }
+
+            if (!foundPort) lines.add("server-port=" + port);
+            if (!foundResourcePack) lines.add("resource-pack=" + serverName);
+
             Files.write(serverProps.toPath(), lines);
         }
 
-        // Spigot starten
+        // Server starten
         ProcessBuilder pb = new ProcessBuilder("java", "-Xmx1G", "-jar", "spigot.jar", "nogui");
         pb.directory(serverFolder);
         pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
@@ -50,7 +76,9 @@ public class ServerManager {
         runningServers.put(serverName, process);
 
         System.out.println("Server " + serverName + " gestartet auf Port " + port);
+        sendMessageToBungee("§8[§bCloud§8] §7The server §b" + serverName + " §7is now §a§lstarted.");
     }
+
 
     public void stopServer(String serverName) {
         Process process = runningServers.get(serverName);
@@ -58,8 +86,9 @@ public class ServerManager {
             process.destroy();
             runningServers.remove(serverName);
             System.out.println("Server " + serverName + " gestoppt.");
+            sendMessageToBungee("§8[§bCloud§8] §7The server §b" + serverName +  " §7is now §c§lstopped.");
         } else {
-            System.out.println("Server " + serverName + " läuft nicht.");
+            System.out.println("Server " + serverName + " is not running.");
         }
     }
 
